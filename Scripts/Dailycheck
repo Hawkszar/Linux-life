@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+## This is the first stage of system checks.
+
+echo "--- Disk Usage ---"
+df -h
+read -n 1 -s -r -p "Press any key to continue..."
+echo -e "\n"
+
+echo "--- Memory Status ---"
+free -m
+read -n 1 -s -r -p "Press any key to continue..."
+echo -e "\n"
+
+echo "--- Active Services ---"
+systemctl list-units --type=service --state=running
+read -n 1 -s -r -p "Press any key to see to continue..."
+echo -e "\n"
+
+echo "--- Failed Services ---"
+systemctl --failed
+echo -n 1 -s -r -p "Press any key to continue..."
+echo -e "\n"
+
+echo "---Deep Check ---"
+lsblk -f
+read -n 1 -s -r -p "Press any key to continue..."
+echo -e "\n"
+
+
+
