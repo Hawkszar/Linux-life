@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+trap '' TSTP
+set -euo pipefail
+
+CHEATS_DIR="${CHEATS_DIR:-$HOME/Hawklabs/scripts}"
+
+if ! command -v fzf >/dev/null 2>&1; then
+  echo "Install fzf: sudo apt install fzf"
+  exit 1
+fi
+
+# Build list as: file:line:content
+mapfile -t lines < <(grep -RIn --color=never . "$CHEATS_DIR" 2>/dev/null)
+
+if [[ ${#lines[@]} -eq 0 ]]; then
+  echo "No cheats found in $CHEATS_DIR"
+  exit 1
+fi
+
+choice="$(printf '%s\n' "${lines[@]}" | fzf --prompt="hawk> " --height=80% --reverse --ansi)"
+[[ -z "${choice:-}" ]] && exit 0
+
+file="${choice%%:*}"
+rest="${choice#*:}"
+line="${rest%%:*}"
+
+echo
+echo "=== $(basename "$file") (around line $line) ==="
+nl -ba "$file" | sed -n "$((line-6)),$((line+6))p"
+echo
+
+read -p "Run this snippet? (y/n) " -n 1 -r
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    # This pulls just the command part (excluding comments) and runs it
+    cmd=$(sed -n "${line}p" "$file" | grep -v '^#')
+    eval "$cmd"
+fi

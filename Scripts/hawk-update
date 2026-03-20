@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+REPORT="$HOME/Hawklabs/Reports/update-$(date +%F_%H%M).txt"
+mkdir -p "$(dirname "$REPORT")"
+
+echo "Updating system..." | tee "$REPORT"
+echo "Time: $(date)" | tee -a "$REPORT"
+echo "Kernel before: $(uname -r)" | tee -a "$REPORT"
+echo | tee -a "$REPORT"
+
+sudo apt update 2>&1 | tee -a "$REPORT"
+sudo apt upgrade -y 2>&1 | tee -a "$REPORT"
+
+echo | tee -a "$REPORT"
+echo "Kernel after: $(uname -r)" | tee -a "$REPORT"
+echo "Done." | tee -a "$REPORT"
+
+echo
+echo "Update part one done, Reprots Filed"
+
+sudo apt install system76-driver* -y
+sudo apt install nvidia-driver* -y
+sudo apt upgrade --full-upgrade -y
+echo
+echo "=== Instlling No Regretse Base Line ===" 
+
+reboot
+

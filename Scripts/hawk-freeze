@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SRC="$HOME/Hawklabs"
+DEST_ROOT="/mnt/1TB/HawkFreeze"   # <-- CHANGE THIS to your 1TB mount
+DEST="$DEST_ROOT/Hawklabs"
+
+mkdir -p "$DEST_ROOT"
+
+echo "Freezing:"
+echo "  FROM: $SRC"
+echo "  TO:   $DEST"
+echo
+
+rsync -avh --progress \
+  --exclude ".git/" \
+  --exclude "Private/" \
+  --exclude "Reports/" \
+  --exclude "builds/" \
+  "$SRC/" "$DEST/"
+
+echo
+echo "Done."

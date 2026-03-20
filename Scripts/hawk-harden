@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "=== Users with shells ==="
+cut -d: -f1,7 /etc/passwd | grep -v nologin
+
+echo
+echo "=== SSH keys ==="
+ls -la ~/.ssh 2>/dev/null || echo "No ~/.ssh folder"
+
+echo
+echo "=== Listening ports ==="
+ss -tulpn
+
+echo
+echo "=== Sudo users ==="
+getent group sudo || true
+
+# DRIVE HEALTH: Check SMART status for all drives
+echo
+echo "=== Drive Health ==="
+lsblk -dno NAME | xargs -I {} sudo smartctl -H /dev/{}
+
+# ZOMBIES: Find defunct processes eating resources
+echo
+echo "=== ZOMBIES ==="
+ps aux | awk '{if ($8=="Z") print $0}'
+
+cloak

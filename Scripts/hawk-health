@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+hr() { printf "\n========== %s ==========\n" "$1"; }
+
+hr "DATE / HOST"
+date
+hostnamectl 2>/dev/null || true
+uname -a
+
+hr "UPTIME / LOAD"
+uptime
+
+hr "DISK USAGE"
+df -hT /
+
+hr "TOP SPACE (home + var)"
+du -sh ~/ 2>/dev/null || true
+sudo du -xhd1 /var 2>/dev/null | sort -h | tail -n 12 || true
+
+hr "MEMORY / SWAP"
+free -h
+
+hr "FAILED SERVICES"
+systemctl --failed --no-pager || true
+
+hr "ERRORS THIS BOOT (journal priority 0-3)"
+journalctl -p 3 -b --no-pager | tail -n 60 || true
+
+hr "GPU (NVIDIA) (if present)"
+if command -v nvidia-smi >/dev/null 2>&1; then
+  nvidia-smi || true
+else
+  echo "nvidia-smi not found (no NVIDIA driver tool or not installed)."
+fi
+
+hr "NETWORK LISTENERS (first 60 lines)"
+ss -tulpn | head -n 60 || true
+
+hr "UPDATES AVAILABLE"
+if command -v apt >/dev/null 2>&1; then
+  apt-get -s upgrade | grep -E "^[0-9]+ upgraded" || true
+fi
