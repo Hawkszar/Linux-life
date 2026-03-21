@@ -155,4 +155,7 @@ Replace these with the real commands for this project.
 
 ### Install
 ```bash
-[INSTALL_COMMAND]
+[MONITOR]
+[ADD]
+[MAKE]
+[KNOWLEDGE]
